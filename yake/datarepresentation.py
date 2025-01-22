@@ -1,19 +1,59 @@
+'''
+datarepresentation.py
+
+Este módulo contém classes para processar dados de texto de forma a criar uma
+representação central dos dados. Suporta "tokenização", extração
+de características e construção de uma representação de termos e as suas relações
+baseada em grafos.
+
+Dependencias:
+    - segtok.segmenter
+    - segtok.tokenizer
+    - math
+    - os
+    - re
+    - string
+    - jellyfish
+    - networkx
+    - numpy    
+'''
+
 from segtok.segmenter import split_multi
 from segtok.tokenizer import web_tokenizer, split_contractions
 
+import math
+import os
+import re
+import string
+
+import jellyfish
 import networkx as nx
 import numpy as np
-import string
-import os
-import math
-import jellyfish
-import re
 
 STOPWORD_WEIGHT = 'bi'
 
 class DataCore(object):
+    '''Representa a estrutura de dados principal para a análise de texto.
+
+    Atributos:
+        number_of_sentences (int): Número total de frases no texto.
+        number_of_words (int): Número total de palavras no texto.
+        termos (dict): Dicionário de termos e seus metadados.
+        candidatos (dict): Dicionário de frases-chave candidatas.
+        frases_obj (lista): Lista de objetos de frases contendo termos.
+        frases_str (lista): Lista de frases tokenizadas como strings.
+        G (networkx.DiGraph): Estrutura gráfica que representa o termo
+            co-ocorrências.
+        exclude (set): Conjunto de caracteres a eliminar.
+        tags_to_discard (set): "Tags" que representam palavras a descartar.
+        freq_ns (dict): Frequência de "n-gramas".
+    """'''
     
-    def __init__(self, text, stopword_set, windowsSize, n, tagsToDiscard = set(['u', 'd']), exclude = set(string.punctuation)):
+    def __init__(
+            self, text, stopword_set, windows_size, n,
+            tags_to_discard = set(['u','d']), exclude = set(string.punctuation)):
+        
+        # Inicialização de atributos
         self.number_of_sentences = 0
         self.number_of_words = 0
         self.terms = {}
@@ -22,15 +62,20 @@ class DataCore(object):
         self.sentences_str = []
         self.G = nx.DiGraph()
         self.exclude = exclude
-        self.tagsToDiscard = tagsToDiscard
+        self.tags_to_discard = tags_to_discard
         self.freq_ns = {}
         for i in range(n):
             self.freq_ns[i+1] = 0.
         self.stopword_set = stopword_set
-        self._build(text, windowsSize, n)
+
+        # Construção dos objetos baseados no texto fornecido
+        self._build(text, windows_size, n)
 
     def build_candidate(self, candidate_string):
-        sentences_str = [w for w in split_contractions(web_tokenizer(candidate_string.lower())) if not (w.startswith("'") and len(w) > 1) and len(w) > 0]
+        sentences_str = [
+            w for w in split_contractions(web_tokenizer(candidate_string.lower()))
+            if not (w.startswith("'") and len(w) > 1) and len(w) > 0
+            ]
         candidate_terms = []
         for (i, word) in enumerate(sentences_str):
             tag = self.getTag(word, i)
@@ -43,11 +88,86 @@ class DataCore(object):
             return invalid_virtual_cand
         virtual_cand = composed_word(candidate_terms)
         return virtual_cand
+    
+    """def build_candidate(self, candidate_string):  ///////////////////////////////////////A testar
+        
+        Constrói um candidato a partir de uma string fornecida.
+
+        Args:
+            candidate_string (str): String do candidato.
+
+        Returns:
+            composed_word: Objeto representando o candidato composto.
+        
+        # Tokenizar e normalizar a string do candidato
+        tokens = [
+            w for w in split_contractions(web_tokenizer(candidate_string.lower()))
+            if not (w.startswith("'") and len(w) > 1) and len(w) > 0
+        ]
+        
+        candidate_terms = []
+        
+        # Iterar sobre os tokens para construir termos
+        for i, word in enumerate(tokens):
+            tag = self.get_tag(word, i)
+            term_obj = self.get_term(word, save_non_seen=False)
+            
+            # Ignorar termos não vistos
+            if term_obj.tf == 0:
+                term_obj = None
+            
+            candidate_terms.append((tag, word, term_obj))
+        
+        # Validar se há termos válidos
+        if not any(cand[2] is not None for cand in candidate_terms):
+            return composed_word(None)
+
+        # Criar e retornar o objeto de palavra composta
+        return composed_word(candidate_terms)def build_candidate(self, candidate_string):
+        
+        Constrói um candidato a partir de uma string fornecida.
+
+        Args:
+            candidate_string (str): String do candidato.
+
+        Returns:
+            composed_word: Objeto representando o candidato composto.
+        
+        # Tokenizar e normalizar a string do candidato
+        tokens = [
+            w for w in split_contractions(web_tokenizer(candidate_string.lower()))
+            if not (w.startswith("'") and len(w) > 1) and len(w) > 0
+        ]
+        
+        candidate_terms = []
+        
+        # Iterar sobre os tokens para construir termos
+        for i, word in enumerate(tokens):
+            tag = self.get_tag(word, i)
+            term_obj = self.get_term(word, save_non_seen=False)
+            
+            # Ignorar termos não vistos
+            if term_obj.tf == 0:
+                term_obj = None
+            
+            candidate_terms.append((tag, word, term_obj))
+        
+        # Validar se há termos válidos
+        if not any(cand[2] is not None for cand in candidate_terms):
+            return composed_word(None)
+
+        # Criar e retornar o objeto de palavra composta
+        return composed_word(candidate_terms)"""
 
     # Build the datacore features
-    def _build(self, text, windowsSize, n):
+    def _build(self, text, windows_size, n):
+        """Constrói a estrutura de análise."""
         text = self.pre_filter(text)
-        self.sentences_str = [ [w for w in split_contractions(web_tokenizer(s)) if not (w.startswith("'") and len(w) > 1) and len(w) > 0] for s in list(split_multi(text)) if len(s.strip()) > 0]
+        self.sentences_str = [
+            [w for w in split_contractions(web_tokenizer(s))
+             if not (w.startswith("'") and len(w) > 1) and len(w) > 0]
+            for s in list(split_multi(text)) if len(s.strip()) > 0
+        ]
         self.number_of_sentences = len(self.sentences_str)
         pos_text = 0
         block_of_word_obj = []
@@ -67,10 +187,10 @@ class DataCore(object):
                     pos_text += 1
 
                     #Create co-occurrence matrix
-                    if tag not in self.tagsToDiscard:
-                        word_windows = list(range( max(0, len(block_of_word_obj)-windowsSize), len(block_of_word_obj) ))
+                    if tag not in self.tags_to_discard:
+                        word_windows = list(range( max(0, len(block_of_word_obj)-windows_size), len(block_of_word_obj) ))
                         for w in word_windows:
-                            if block_of_word_obj[w][0] not in self.tagsToDiscard: 
+                            if block_of_word_obj[w][0] not in self.tags_to_discard: 
                                 self.addCooccur(block_of_word_obj[w][2], term_obj)
                     #Generate candidate keyphrase list
                     candidate = [ (tag, word, term_obj) ]
@@ -279,11 +399,17 @@ class composed_word(object):
                 if STOPWORD_WEIGHT == 'bi':
                     prob_t1 = 0.
                     if term_base.G.has_edge(self.terms[t-1].id, self.terms[ t ].id):
-                        prob_t1 = term_base.G[self.terms[t-1].id][self.terms[ t ].id]["TF"] / self.terms[t-1].tf
+                        prob_t1 = (
+                            term_base.G[self.terms[t-1].id][self.terms[ t ].id]["TF"]
+                            / self.terms[t-1].tf
+                        )
 
                     prob_t2 = 0.
                     if term_base.G.has_edge(self.terms[ t ].id, self.terms[t+1].id):
-                        prob_t2 = term_base.G[self.terms[ t ].id][self.terms[t+1].id]["TF"] / self.terms[t+1].tf
+                        prob_t2 = (
+                            term_base.G[self.terms[ t ].id][self.terms[t+1].id]["TF"]
+                            / self.terms[t+1].tf
+                        )
 
                     prob = prob_t1 * prob_t2
                     prod_H *= (1 + (1 - prob ) )
