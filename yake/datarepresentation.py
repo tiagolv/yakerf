@@ -717,18 +717,18 @@ class SingleWord:
             "stopword": False,
             "h": 0.0,  # Final Score
             # Term frequency statistics
-            "tf": 0.0,  # Term frequency
-            "tf_a": 0.0,  # Term Frequency for uppercase words
-            "tf_n": 0.0,  # Term Frequency for proper nouns
+            "tf": 0.0,      # Term frequency
+            "tf_a": 0.0,    # Term Frequency for uppercase words
+            "tf_n": 0.0,    # Term Frequency for proper nouns
             # Word characteristic metrics
-            "wfreq": 0.0,  # Word frequency
-            "wcase": 0.0,  # Word case metric
-            "wrel": 1.0,  # Word relevance metric
-            "wpos": 1.0,  # Word position metric
-            "wspread": 0.0,  # Word spread across document
-            "pl": 0.0,  # Probability left
-            "pr": 0.0,  # Probability right
-            "pagerank": 1.0,  # PageRank score
+            "wfreq": 0.0,   # Word frequency
+            "wcase": 0.0,   # Word case metric
+            "wrel": 1.0,    # Word relevance metric
+            "wpos": 1.0,    # Word position metric
+            "wspread": 0.0, # Word spread across document
+            "pl": 0.0,      # Probability left
+            "pr": 0.0,      # Probability right
+            "pagerank": 1.0, # PageRank score
             # Ocurrence tracking
             "occurs": {},  # Sentence Occurrences
         }
