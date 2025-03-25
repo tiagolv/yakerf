@@ -2,6 +2,8 @@
 # Author: Florian Boudin and Vítor Mangaravite
 # Date: 09-10-2018
 
+# pylint: disable=E0401
+
 """YAKE keyphrase extraction model.
 
 Statistical approach to keyphrase extraction described in:

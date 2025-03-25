@@ -1,7 +1,7 @@
 """Module providing Levenshtein distance and ratio calculations."""
-
-import numpy as np
 # pylint: disable=E0401
+import numpy as np
+
 
 
 class Levenshtein:

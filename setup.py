@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# pylint: disable=line-too-long
+# pylint: disable=E0401
+
 """The setup script."""
 
 from setuptools import setup, find_packages

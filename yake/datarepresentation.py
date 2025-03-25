@@ -1,8 +1,10 @@
+# pylint: disable=E0401
+
 import re
 import string
 import math
 import jellyfish
-# pylint: disable=E0401
+
 
 from segtok.segmenter import split_multi
 from segtok.tokenizer import web_tokenizer, split_contractions
@@ -322,7 +324,7 @@ class DataCore:
                 [cand for cand in self.candidates.values() if cand.is_valid()],
             )
         )
-  
+
     def get_tag(self, word, i):
         """
         Determine the tag for a word based on its characteristics.

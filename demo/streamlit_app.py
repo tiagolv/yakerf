@@ -1,3 +1,5 @@
+# pylint: disable=E0401
+# pylint: disable=line-too-long
 import streamlit as st
 import yake
 import pandas as pd
@@ -7,8 +9,7 @@ import matplotlib.pyplot as plt
 from spacy import displacy
 import re
 
-# pylint: disable=line-too-long
-# pylint: disable=E0401
+
 
 
 

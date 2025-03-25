@@ -1,10 +1,10 @@
 """CLI para extração de palavras-chave utilizando YAKE!"""
-
+# pylint: disable=E0401
 import sys
 import click
 from tabulate import tabulate
 import yake
-# pylint: disable=E0401
+
 
 @click.command()
 @click.option(

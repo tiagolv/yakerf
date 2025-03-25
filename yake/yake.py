@@ -1,10 +1,9 @@
 """Module for keyword extraction from text documents."""
-
+# pylint: disable=E0401
 import os
 import jellyfish
 from .Levenshtein import Levenshtein
 from .datarepresentation import DataCore
-# pylint: disable=E0401
 
 
 class KeywordExtractor:

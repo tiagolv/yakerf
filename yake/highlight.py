@@ -2,12 +2,12 @@
 Module for highlighting text based on keywords.
 Provides functionality to highlight specific keywords in text.
 """
-
+# pylint: disable=E0401
 import re
 import logging
 from dataclasses import dataclass
 from typing import List
-# pylint: disable=E0401
+
 
 DEFAULT_HIGHLIGHT_PRE = "<kw>"
 DEFAULT_HIGHLIGHT_POST = "</kw>"
