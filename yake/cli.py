@@ -4,7 +4,7 @@ import sys
 import click
 from tabulate import tabulate
 import yake
-
+# pylint: disable=E0401
 
 @click.command()
 @click.option(
