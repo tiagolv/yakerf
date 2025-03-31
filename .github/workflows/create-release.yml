@@ -1,46 +1,66 @@
-- name: Get latest release version
-  id: get_version
-  run: |
-    LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+name: Create Release on Commit to Master
 
-    if [[ -z "$LATEST_TAG" ]]; then
-      echo "No existing tags found. Starting from v0.0.0"
-      LATEST_TAG="v0.0.0"
-    fi
+on:
+  push:
+    branches:
+      - master  # Executa o workflow em cada commit no branch master
+  workflow_dispatch:
 
-    echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Necessário para criar releases
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Busca todo o histórico para versionamento correto
+      
+      - name: Get latest release version
+        id: get_version
+        run: |
+          |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+          if [[ -z "$LATEST_TAG" ]]; then
+            echo "No existing tags found. Starting from v0.0.0"
+            LATEST_TAG="v0.0.0"
+          fi
 
-    MAJOR=$(echo $LATEST_TAG | sed 's/v\([0-9]*\).\([0-9]*\).\([0-9]*\)/\1/')
-    MINOR=$(echo $LATEST_TAG | sed 's/v\([0-9]*\).\([0-9]*\).\([0-9]*\)/\2/')
-    PATCH=$(echo $LATEST_TAG | sed 's/v\([0-9]*\).\([0-9]*\).\([0-9]*\)/\3/')
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
 
-    PATCH=$((PATCH + 1))
-    NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          MAJOR=$(echo $LATEST_TAG | sed 's/v\([0-9]*\).\([0-9]*\).\([0-9]*\)/\1/')
+          MINOR=$(echo $LATEST_TAG | sed 's/v\([0-9]*\).\([0-9]*\).\([0-9]*\)/\2/')
+          PATCH=$(echo $LATEST_TAG | sed 's/v\([0-9]*\).\([0-9]*\).\([0-9]*\)/\3/')
 
-    echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_ENV
+          PATCH=$((PATCH + 1))
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
 
-- name: Generate Release Notes
-  id: release_notes
-  run: |
-    if git rev-parse "$LATEST_TAG" >/dev/null 2>&1; then
-      COMMITS=$(git log --pretty=format:"- %s (%h)" $LATEST_TAG..HEAD)
-    else
-      COMMITS=$(git log --pretty=format:"- %s (%h)")
-    fi
+          echo "NEW_TAG=${NEW_TAG}" >> $GITHUB_ENV
+      
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          if git rev-parse "$LATEST_TAG" >/dev/null 2>&1; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" $LATEST_TAG..HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"- %s (%h)")
+          fi
 
-    COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
-    COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
 
-    echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-    echo "## Release ${{ env.NEW_TAG }}" >> $GITHUB_ENV
-    echo "" >> $GITHUB_ENV
-    echo "### 📦 Changes" >> $GITHUB_ENV
-    echo "$COMMITS" >> $GITHUB_ENV
-    echo "" >> $GITHUB_ENV
-    echo "### 🔄 Latest Commit" >> $GITHUB_ENV
-    echo "- **Author:** $COMMIT_AUTHOR" >> $GITHUB_ENV
-    echo "- **Message:** $COMMIT_MESSAGE" >> $GITHUB_ENV
-    echo "EOF" >> $GITHUB_ENV
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "## Release ${{ env.NEW_TAG }}" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "### 📦 Changes" >> $GITHUB_ENV
+          echo "$COMMITS" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "### 🔄 Latest Commit" >> $GITHUB_ENV
+          echo "- **Author:** $COMMIT_AUTHOR" >> $GITHUB_ENV
+          echo "- **Message:** $COMMIT_MESSAGE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
