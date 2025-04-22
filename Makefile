@@ -1,5 +1,5 @@
 install:
-	uv pip sync --dev
+	uv pip sync --features dev
 
 test:
 	# python -m pytest --nbval *.ipynb
