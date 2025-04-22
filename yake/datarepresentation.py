@@ -17,24 +17,9 @@ STOPWORD_WEIGHT = "bi"
 
 class DataCore:
     """
-    Core data manager for keyword extraction that processes text and builds
-    data structures for keyword candidates.
-    
-    Implementation uses consolidated dictionaries to reduce the number of direct 
-    instance attributes while maintaining the same functionality.
     """
     def __init__(self, text, stopword_set, config=None):
         """
-        Initialize the DataCore object for keyword extraction.
-
-        Args:
-            text (str): The input text to process.
-            stopword_set (set): Set of stopwords to use.
-            config (dict, optional): Configuration parameters including:
-                - windows_size (int): Size of sliding window for co-occurrence analysis.
-                - n (int): Maximum n-gram size.
-                - tags_to_discard (set): Tags to exclude (default: {'u', 'd'}).
-                - exclude (set): Characters to exclude (default: string.punctuation).
         """
         # Initialize default configuration
         if config is None:
@@ -46,8 +31,6 @@ class DataCore:
         tags_to_discard = config.get("tags_to_discard", set(["u", "d"]))
         exclude = config.get("exclude", set(string.punctuation))
 
-        # Consolidate all settings into a single _state dictionary
-        # This reduces the instance attribute count significantly
         self._state = {
             # Configuration
             "config": {
@@ -146,12 +129,6 @@ class DataCore:
     # --- Internal utility methods ---
     def _build(self, text, windows_size, n):
         """
-        Build the datacore features by processing text and extracting data structures.
-
-        Args:
-            text (str): The text to process
-            windows_size (int): Size of sliding window for co-occurrence analysis
-            n (int): Maximum n-gram size
         """
         text = self._pre_filter(text)
         self.sentences_str = self._tokenize_sentences(text)
@@ -164,9 +141,6 @@ class DataCore:
         for sentence_id, sentence in enumerate(self.sentences_str):
             pos_text = self._process_sentence(sentence, sentence_id, pos_text, context)
         self.number_of_words = pos_text
-
-    # --- Changed public methods to protected (prefixed with underscore) ---
-    # This reduces the public method count
 
     def _tokenize_sentences(self, text):
         """Tokenize text into sentences and words."""
@@ -266,13 +240,6 @@ class DataCore:
 
     def build_candidate(self, candidate_string):
         """
-        Build a candidate from a string by tokenizing and processing its words.
-
-        Args:
-            candidate_string (str): The string to build a candidate from.
-
-        Returns:
-            ComposedWord: A virtual candidate object constructed from the processed terms.
         """
         tokenized_words = [
             w
@@ -327,14 +294,6 @@ class DataCore:
 
     def get_tag(self, word, i):
         """
-        Determine the tag for a word based on its characteristics.
-        
-        Args:
-            word (str): The word to analyze.
-            i (int): The position of the word.
-            
-        Returns:
-            str: The tag assigned to the word ('d', 'u', 'a', 'n', or 'p').
         """
         try:
             w2 = word.replace(",", "")
@@ -362,14 +321,6 @@ class DataCore:
 
     def get_term(self, str_word, save_non_seen=True):
         """
-        Get or create a term object for a word.
-        
-        Args:
-            str_word (str): The word to get a term for.
-            save_non_seen (bool, optional): Whether to save new terms. Defaults to True.
-            
-        Returns:
-            SingleWord: The term object for the word.
         """
         unique_term = str_word.lower()
         simples_sto = unique_term in self.stopword_set
@@ -415,11 +366,6 @@ class DataCore:
 
 class ComposedWord:
     """
-    Class representing a composed word (multi-word term) in the document.
-
-    Implementation uses a minimalist approach with minimal direct attributes,
-    using a data dictionary for storing most properties to reduce the total
-    attribute count while maintaining backward compatibility.
     """
 
     def __init__(self, terms):  # [ (tag, word, term_obj) ]
@@ -529,17 +475,7 @@ class ComposedWord:
 
     def build_features(self, params):
         """
-        Build features for the composed word.
-
-        Args:
-            params (dict): Dictionary containing the following keys:
-                - doc_id (optional): Document ID.
-                - keys (optional): List of keys.
-                - rel (optional): Boolean indicating relevance.
-                - rel_approx (optional): Boolean indicating approximate relevance.
         """
-        # Function implementation remains the same
-        # Only changes needed are for accessing attributes through self.data
         features = params.get(
             "features", ["wfreq", "wrel", "tf", "wcase", "wpos", "wspread"]
         )
@@ -697,23 +633,13 @@ class ComposedWord:
 
 class SingleWord:
     """
-    Class representing a single word in the document text with its associated metrics.
-
-    Implementation uses a minimalist approach with only three instance attributes:
-    - id: The word's identifier in the graph
-    - g: Reference to the graph
-    - data: A consolidated dictionary containing all other attributes
-
-    All access to word properties is through property accessors or dictionary methods,
-    maintaining backward compatibility with previous implementations.
     """
 
     def __init__(self, unique, idx, graph):
-        # Keep only the absolute minimum as direct attributes - just these 3
+        
         self.id = idx  # Fast access needed as it's used in graph operations
         self.g = graph  # Fast access needed for network calculations
 
-        # Everything else goes in the data dictionary - no exceptions
         self.data = {
             # Basic information
             "unique_term": unique,
