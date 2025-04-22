@@ -1,5 +1,5 @@
 install:
-	uv pip sync --features dev
+	uv pip sync pyproject.toml --features dev
 
 test:
 	# python -m pytest --nbval *.ipynb
