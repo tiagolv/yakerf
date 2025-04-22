@@ -19,5 +19,8 @@ jobs:
           curl -Ls https://astral.sh/uv/install.sh | bash
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Instalar pacotes
+      - name: Gerar uv.lock com todas as dependências
+        run: make lock
+
+      - name: Instalar dependências
         run: make install

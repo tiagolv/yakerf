@@ -1,10 +1,11 @@
 install:
-	uv pip sync pyproject.toml --features dev
+	uv pip sync uv.lock
+
+lock:
+	uv pip compile pyproject.toml --all-features -o uv.lock
 
 test:
-	# python -m pytest --nbval *.ipynb
 	python -m pytest -vv --cov= .
-
 
 format:	
 	black .
@@ -14,5 +15,5 @@ lint:
 
 deploy:
 	# no rules for now
-		
-all: install lint test format
+
+all: lock install lint test format
