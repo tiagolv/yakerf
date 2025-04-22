@@ -1,19 +1,20 @@
 install:
-	uv pip sync uv.lock
-
-lock:
-	uv pip compile pyproject.toml --all-features -o uv.lock
+	pip install --upgrade pip &&\
+		pip install -r requirements.txt
 
 test:
-	python -m pytest -vv --cov= .
+	# python -m pytest --nbval *.ipynb
+	python -m pytest -vv --cov= test_*.
+
 
 format:	
 	black .
 
 lint:
 	ruff check --fix .
+	ruff check .
 
 deploy:
 	# no rules for now
-
-all: lock install lint test format
+		
+all: install lint test format
