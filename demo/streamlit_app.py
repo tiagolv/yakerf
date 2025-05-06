@@ -4,6 +4,16 @@ import streamlit as st
 import yake
 import pandas as pd
 import numpy as np
+import os
+import spacy
+
+# Garantir que o modelo spaCy esteja carregado
+try:
+    nlp = spacy.load("en_core_web_sm")
+except:
+    os.system("python -m spacy download en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
+
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from spacy import displacy
