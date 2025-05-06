@@ -1,5 +1,4 @@
 streamlit==0.64.0
-git+https://github.com/LIAAD/yake
 pandas==1.0.5
 numpy==1.18.5
 wordcloud==1.8.0
@@ -7,7 +6,7 @@ matplotlib==3.3.1
 spacy==2.3.2
 importlib-metadata==4.13.0
 Pillow==7.2.0
-yake
+yake @ git+https://github.com/LIAAD/yake.git
 
 # Download spaCy model for displacy
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz
