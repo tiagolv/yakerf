@@ -6,7 +6,9 @@ matplotlib==3.3.1
 spacy==2.3.2
 importlib-metadata==4.13.0
 Pillow==7.2.0
-yake @ git+https://github.com/LIAAD/yake.git
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl
+https://github.com/boudinfl/pke/archive/master.zip
+https://github.com/LIAAD/yake/archive/master.zip
 
 # Download spaCy model for displacy
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz
