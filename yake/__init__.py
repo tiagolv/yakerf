@@ -1,9 +1,21 @@
-# -*- coding: utf-8 -*-
+"""
+YAKE (Yet Another Keyword Extractor)
+====================================
 
-"""Top-level package for yake."""
+A light-weight unsupervised automatic keyword extraction method which rests on 
+text statistical features extracted from single documents to select the most 
+relevant keywords of a text.
+"""
 
-__author__ = """vitordouzi"""
-__email__ = "vitordouzi@gmail.com"
-__version__ = "0.4.8"
+# Import the main KeywordExtractor class
+from .core.yake import KeywordExtractor
 
-from yake.core.yake import KeywordExtractor as KeywordExtractor
+# Version information
+__version__ = "0.6.0"
+__author__ = "LIAAD"
+
+# Default maximum n-gram size
+MAX_NGRAM_SIZE = 3
+
+# Make the main class available at package level
+__all__ = ['KeywordExtractor', 'MAX_NGRAM_SIZE']

@@ -39,3 +39,10 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+# ...existing code...
+
+# Benchmark results
+.benchmarks/
+benchmark_histogram.svg
+*.prof
